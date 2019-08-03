@@ -20,7 +20,7 @@ Add descriptions to your variables so that you can remember what they are for.
 
 ## Features
 
-Description can be added by adding a comment above the variable we want to describe along with @ (at) character followed by the description itself.
+Description can be added by adding a comment above the variable you want to describe along with @ (at) character followed by the description itself.
 
 ```js
 // @Array of indices to specify in which order the vertices will be processed
