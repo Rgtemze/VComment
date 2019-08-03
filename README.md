@@ -1,6 +1,6 @@
 # VComment (Under Development)
 
-Add descriptions to your variables so that you can remember what they are for.
+Add descriptions to your variables so that you can remember what they are for when the variable names remain incapable.
 
 ## Installation
 
