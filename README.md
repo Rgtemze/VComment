@@ -6,7 +6,7 @@ Add descriptions to your variables so that you can remember what they are for wh
 
 > Note that the extension is still under development. Hence, it is not available in the VS Code extensions page.
 
-1. Make sure you have VS Code installed.
+1. Make sure you have VS Code & Typescript installed.
 
 2. Clone this repo
 
