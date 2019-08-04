@@ -16,9 +16,11 @@ Add descriptions to your variables so that you can remember what they are for wh
 
 5. Press `F5` wich will open VS Code with the extension.
 
-6. Press `Ctrl + Shift + P` and type `VComment` to activate the extension.
+6. Press `Ctrl + Shift + P` and type `VComment` to run the extension.
 
 ## Features
+
+> You should run the extension for each file using step 6 under Installation
 
 Description can be added by adding a comment above the variable you want to describe along with @ (at) character followed by the description itself.
 
@@ -37,4 +39,4 @@ Then, when the variable selected (hovering is not enough [2]), its description w
 
 2. I could not get the hovered text from VS Code API. Hence, I again resorted to selection to show variable description.
 
-3. It does not differentiate between different files.
+3. If a variable name repeats it saves the last one. Instead, it should be taking care of the scope.

@@ -3,7 +3,7 @@
 import * as vscode from 'vscode';
 
 
-const comments : {[variable: string]: string} = {};
+const comments : {[docId: string]: {[variable: string]: string}} = {};
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -20,6 +20,7 @@ export function activate(context: vscode.ExtensionContext) {
 		// The code you place here will be executed every time your command is executed
 		var activeEditor = vscode.window.activeTextEditor;
 		if (activeEditor !== undefined) {
+		comments[activeEditor.document.uri.fsPath] = {};
 		vscode.commands
 			.executeCommand<vscode.DocumentSymbol[]>(
 				'vscode.executeDocumentSymbolProvider', activeEditor.document.uri)
@@ -27,6 +28,10 @@ export function activate(context: vscode.ExtensionContext) {
 				if (symbols !== undefined) {
 					for (const variable of findVars(symbols)) {
 						console.log(variable.name);
+
+						if(variable.range.start.line == 0){
+							continue;
+						}
 						const sel = new vscode.Selection(variable.range.start.line - 1, 0, variable.range.start.line, 0);
 						let text = activeEditor!.document.getText(sel);
 						
@@ -37,7 +42,7 @@ export function activate(context: vscode.ExtensionContext) {
 						if(atPos == -1){
 							continue;
 						}
-						comments[variable.name] = text.substr(atPos + 1);
+						comments[activeEditor!.document.uri.fsPath][variable.name] = text.substr(atPos + 1);
 				}
 				}
 			});
@@ -48,7 +53,7 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(disposable);
 
 	vscode.languages.registerHoverProvider(
-		'javascript',
+		'*',
 		new class implements vscode.HoverProvider {
 		  provideHover(
 			_document: vscode.TextDocument,
@@ -63,11 +68,11 @@ export function activate(context: vscode.ExtensionContext) {
 			if(editor){
 				const selData = editor.selection;
 				const variable = _document.getText(selData);
-				
-				if(comments[variable] && _position.line == selData.anchor.line 
+				const comment = comments[editor.document.uri.fsPath][variable];
+				if(comment && _position.line == selData.anchor.line 
 										&& _position.character >= selData.anchor.character
 										&& _position.character <= selData.end.character ){
-					contents = new vscode.MarkdownString(`${comments[variable]}`);
+					contents = new vscode.MarkdownString(`${comment}`);
 				}
 			}
 	
