@@ -18,7 +18,30 @@ export function activate(context: vscode.ExtensionContext) {
 	// The commandId parameter must match the command field in package.json
 	let disposable = vscode.commands.registerCommand('extension.vcomment', () => {
 		// The code you place here will be executed every time your command is executed
-
+		var activeEditor = vscode.window.activeTextEditor;
+		if (activeEditor !== undefined) {
+		vscode.commands
+			.executeCommand<vscode.DocumentSymbol[]>(
+				'vscode.executeDocumentSymbolProvider', activeEditor.document.uri)
+			.then(symbols => {
+				if (symbols !== undefined) {
+					for (const variable of findVars(symbols)) {
+						console.log(variable.name);
+						const sel = new vscode.Selection(variable.range.start.line - 1, 0, variable.range.start.line, 0);
+						let text = activeEditor!.document.getText(sel);
+						
+						const index = text.indexOf("\n");
+						if(index != -1)
+							text = text.substr(0, index);
+						const atPos = text.indexOf("@");
+						if(atPos == -1){
+							continue;
+						}
+						comments[variable.name] = text.substr(atPos + 1);
+				}
+				}
+			});
+		}
 		
 	});
 
@@ -32,8 +55,6 @@ export function activate(context: vscode.ExtensionContext) {
 			_position: vscode.Position,
 			_token: vscode.CancellationToken
 		  ): vscode.ProviderResult<vscode.Hover> {
-
-			processSelectedVariable();
 			
 			const editor = vscode.window.activeTextEditor;
 			
@@ -46,7 +67,7 @@ export function activate(context: vscode.ExtensionContext) {
 				if(comments[variable] && _position.line == selData.anchor.line 
 										&& _position.character >= selData.anchor.character
 										&& _position.character <= selData.end.character ){
-					contents = new vscode.MarkdownString(`${variable}: ${comments[variable]}`);
+					contents = new vscode.MarkdownString(`${comments[variable]}`);
 				}
 			}
 	
@@ -64,28 +85,11 @@ export function activate(context: vscode.ExtensionContext) {
 // this method is called when your extension is deactivated
 export function deactivate() {}
 
-function processSelectedVariable(){
-	const editor = vscode.window.activeTextEditor;
-		
-	if(editor){
-		const selection = editor.selection;
-		const variable = editor.document.getText(selection);
-		if(variable.length == 0) return;
+// Below function is acquired from https://stackoverflow.com/questions/57345173/getting-locations-of-the-variable-declarations
 
-
-		const sel = new vscode.Selection(selection.anchor.line - 1, 0, selection.active.line, 0);
-		let text = editor.document.getText(sel);
-		
-		const index = text.indexOf("\n");
-		if(index != -1)
-			text = text.substr(0, index);
-		const atPos = text.indexOf("@");
-		
-		if(atPos == -1){
-			return;
-		}
-		text = text.substr(atPos + 1);
-		
-		comments[variable] = text;
-	}
+function findVars(symbols: vscode.DocumentSymbol[]): vscode.DocumentSymbol[] {
+	var vars =
+		symbols.filter(symbol => symbol.kind === vscode.SymbolKind.Variable);
+	return vars.concat(symbols.map(symbol => findVars(symbol.children))
+							.reduce((a, b) => a.concat(b), []));
 }

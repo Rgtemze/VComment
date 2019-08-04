@@ -27,17 +27,14 @@ Description can be added by adding a comment above the variable you want to desc
 var indices = [0, 1, 2, 0];
 ```
 
-For the first time, variable to be described should be selected [1].
-
-Then, when the variable selected (hovering is not enough [3]), its description will be available on the pop-up.
+Then, when the variable selected (hovering is not enough [2]), its description will be available on the pop-up.
 
 ![Demo](/images/demo.png)
 
 ## Known Issues & Drawbacks
 
-1. Currently, I detect if a variable has a description associated with it by looking the line above the 'selected' variable. Hence, for the first time to add a description the variable which has description above it should be selected. I should be able to do it without needing to selection.
+1. Multiple declaration (i.e. var x, y) is not supported.
 
-2. Multiple declaration (i.e. var x, y) is not supported.
+2. I could not get the hovered text from VS Code API. Hence, I again resorted to selection to show variable description.
 
-3. I could not get the hovered text from VS Code API. Hence, I again resorted to selection to show variable description.
-
+3. It does not differentiate between different files.
