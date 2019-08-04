@@ -61,21 +61,29 @@ export function activate(context: vscode.ExtensionContext) {
 			_token: vscode.CancellationToken
 		  ): vscode.ProviderResult<vscode.Hover> {
 			
-			const editor = vscode.window.activeTextEditor;
 			
 			let contents = new vscode.MarkdownString(``);
+			const lineSel = new vscode.Selection(_position.line, 0, _position.line + 1, 0);
+			const line = _document.getText(lineSel);
 
-			if(editor){
-				const selData = editor.selection;
-				const variable = _document.getText(selData);
-				const comment = comments[editor.document.uri.fsPath][variable];
-				if(comment && _position.line == selData.anchor.line 
-										&& _position.character >= selData.anchor.character
-										&& _position.character <= selData.end.character ){
-					contents = new vscode.MarkdownString(`${comment}`);
+			const charPos = _position.character;
+			const patt = /[^a-zA-Z0-9$_]/g;
+			let match;
+			let prev = -1;
+			let variable = "";
+			while (match = patt.exec(line)) {
+				if(match.index > charPos){
+					variable = line.substr(prev + 1, match.index - prev - 1);
+					break;
 				}
+				prev = match.index;
 			}
-	
+
+			const comment = comments[_document.uri.fsPath][variable];
+			if(variable && comment){
+				contents = new vscode.MarkdownString(`${comment}`);
+			}
+
 			// To enable command URIs in Markdown content, you must set the `isTrusted` flag.
 			// When creating trusted Markdown string, make sure to properly sanitize all the
 			// input content so that only expected command URIs can be executed
