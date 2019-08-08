@@ -20,7 +20,7 @@ Add descriptions to your variables so that you can remember what they are for wh
 
 ## Features
 
-> You should run the extension for each file using step 6 under Installation
+> You should run the extension for every description addition and change using step 6 under Installation
 
 Description can be added by adding a comment above the variable you want to describe along with @ (at) character followed by the description itself.
 
