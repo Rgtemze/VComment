@@ -39,4 +39,4 @@ Then, when the variable is hovered, its description will be available on the pop
 
 1. Multiple declaration (i.e. var x, y) is not supported.
 
-2. If a variable name repeats it saves the last one. Instead, it should be taking care of the scope.
+2. Only functional scopes are considered while assigning comments to variables. Block scopes could not be detected yet.
