@@ -1,4 +1,4 @@
-# VComment (Under Development)
+# VComment
 
 Add descriptions to your variables so that you can remember what they are for when the variable names remain incapable.
 
