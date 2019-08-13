@@ -18,9 +18,14 @@ Add descriptions to your variables so that you can remember what they are for wh
 
 6. Press `Ctrl + Shift + P` and type `VComment` to run the extension.
 
-## Features
+## Supported Languages
 
-> You should run the extension for every description addition and change using step 6 under Installation
+The extension is tested with:
+- Javascript
+- Python
+
+
+## Features
 
 Description can be added by adding a comment above the variable you want to describe along with @ (at) character followed by the description itself.
 
@@ -30,8 +35,6 @@ var indices = [0, 1, 2, 0];
 ```
 
 Then, when the variable is hovered, its description will be available on the pop-up.
-
-> Variable comments are not shared between files.
 
 ![Demo](/images/demo.png)
 
