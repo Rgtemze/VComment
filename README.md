@@ -39,4 +39,4 @@ Then, when the variable is hovered, its description will be available on the pop
 
 1. Multiple declaration (i.e. var x, y) is not supported.
 
-2. Only functional scopes are considered while assigning comments to variables. Block scopes could not be detected yet. That is, if two variables with the same name are defined in a function, their variable descriptions won't work as expected even if they are under different block scopes (i.e. if, while).
+2. Only functional scopes are considered while assigning comments to variables. Block scopes are not considered yet. That is, if two variables with the same name are defined in a function, their variable descriptions won't be as expected even if they are under different block scopes (i.e. if, while).
