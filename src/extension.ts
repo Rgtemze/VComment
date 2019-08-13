@@ -3,7 +3,6 @@
 import * as vscode from 'vscode';
 
 
-
 class Node{
 	symbol: vscode.DocumentSymbol;
 	comment: string;
@@ -18,7 +17,6 @@ class Node{
 }
 
 let allSymbols: {[documentId: string] :Node[]} = {};
-
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -30,18 +28,17 @@ export function activate(context: vscode.ExtensionContext) {
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
 	// The commandId parameter must match the command field in package.json
-	vscode.workspace.onDidSaveTextDocument(_ => {
+
+	vscode.workspace.onDidChangeTextDocument(_ => {
 		calculateVariables();
 	});
-	
-	vscode.workspace.onDidOpenTextDocument(_ => {
+
+	vscode.window.onDidChangeActiveTextEditor(_ => {
 		calculateVariables();
 	});
 
 	let disposable = vscode.commands.registerCommand('extension.vcomment', () => {
-		// The code you place here will be executed every time your command is executed
 		calculateVariables();
-		
 	});
 
 	context.subscriptions.push(disposable);
@@ -54,26 +51,11 @@ export function activate(context: vscode.ExtensionContext) {
 			_position: vscode.Position,
 			_token: vscode.CancellationToken
 		  ): vscode.ProviderResult<vscode.Hover> {
-			
-			
 			let contents = new vscode.MarkdownString(``);
-			const lineSel = new vscode.Selection(_position.line, 0, _position.line + 1, 0);
-			const line = _document.getText(lineSel);
+			let range = _document.getWordRangeAtPosition(_position)!;
+			let variable = _document.getText(range);
 
-			const charPos = _position.character;
-			const patt = /[^a-zA-Z0-9$_]/g;
-			let match;
-			let prev = -1;
-			let variable = "";
-			let range = new vscode.Range(_position, _position);
-			while (match = patt.exec(line)) {
-				if(match.index > charPos){
-					variable = line.substr(prev + 1, match.index - prev - 1);
-					range = new vscode.Range(new vscode.Position(_position.line, prev + 1) , new vscode.Position(_position.line, match.index - 1));
-					break;
-				}
-				prev = match.index;
-			}
+			let doc : vscode.TextDocument;
 
 			const comment = findSymbol(allSymbols[_document.uri.fsPath], {range: range, name: variable}, null);
 			if(variable && comment){
@@ -94,6 +76,7 @@ function rebuildSymbols(symbols: vscode.DocumentSymbol[]): Node[]{
 
 	return symbols.map(symbol => {
 		if(symbol.kind === vscode.SymbolKind.Variable){
+
 			const activeEditor = vscode.window.activeTextEditor;
 
 			if(symbol.range.start.line == 0){
@@ -102,6 +85,8 @@ function rebuildSymbols(symbols: vscode.DocumentSymbol[]): Node[]{
 				const sel = new vscode.Selection(symbol.range.start.line - 1, 0, symbol.range.start.line, 0);
 				let text = activeEditor!.document.getText(sel);
 				
+				console.log("text");
+				console.log(text);
 				const index = text.indexOf("\n");
 				if(index != -1)
 					text = text.substr(0, index);
@@ -158,16 +143,6 @@ function findSymbol(nodes: Node[], target: {range: vscode.Range, name: string}, 
 // this method is called when your extension is deactivated
 export function deactivate() {}
 
-// Below function is acquired from https://stackoverflow.com/questions/57345173/getting-locations-of-the-variable-declarations
-
-function findVars(symbols: vscode.DocumentSymbol[]): vscode.DocumentSymbol[] {
-	//console.log(symbols);
-	var vars =
-		symbols.filter(symbol => symbol.kind === vscode.SymbolKind.Variable);
-	return vars.concat(symbols.map(symbol => findVars(symbol.children))
-								.reduce((a, b) => a.concat(b), []));
-}
-
 function calculateVariables(){
 	const activeEditor = vscode.window.activeTextEditor;
 	if (activeEditor !== undefined) {
@@ -175,6 +150,8 @@ function calculateVariables(){
 		.executeCommand<vscode.DocumentSymbol[]>(
 			'vscode.executeDocumentSymbolProvider', activeEditor.document.uri)
 		.then(symbols => {
+			console.log("symbols");
+			console.log(symbols);
 			if (symbols !== undefined) {
 				allSymbols[activeEditor.document.uri.fsPath] = rebuildSymbols(symbols);
 			}

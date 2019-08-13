@@ -33,8 +33,6 @@ Then, when the variable is hovered, its description will be available on the pop
 
 > Variable comments are not shared between files.
 
-![Demo](/images/demo.png)
-
 ## Known Issues & Drawbacks
 
 1. Multiple declaration (i.e. var x, y) is not supported.

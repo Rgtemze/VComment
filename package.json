@@ -1,11 +1,13 @@
 {
-	"name": "vcomment",
-	"displayName": "VComment",
+	"name": "variable-comment",
+	"displayName": "Variable Comment",
+	"publisher": "Ziya",
 	"description": "Comment your variables not to forget what they are for",
 	"version": "0.0.1",
 	"engines": {
 		"vscode": "^1.36.0"
 	},
+	"repository": {"url": "https://github.com/Rgtemze/VComment"},
 	"categories": [
 		"Other"
 	],
